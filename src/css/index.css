@@ -1,0 +1,28 @@
+.page{background:#f4f5f5}
+
+.index .container{margin:.2rem 0 0 0;padding:0 .3rem}
+
+.total{margin-top:0!important;height:3.5rem;color:#fff;text-align:center;position: fixed;top: 0;left:0;z-index:2;box-shadow:0 0 2px 0 #f6f7f8}
+.total h3,.total p{font-weight:700}
+
+.deviceTotal{margin-top:.5rem;width:100%}
+.deviceTotal h3{width:100%;font-size:.3rem;line-height:.3rem}
+.deviceTotal p{width:100%;font-size:.55rem;line-height:1.15rem}
+
+.deviceState{margin-top:.25rem;width:100%}
+.deviceState li{width:33.33%}
+.deviceState li p{width:100%;font-size:.3rem;line-height:1rem}
+
+/*bottom:1.25rem*/
+.deviceManage{background:#fff;position:fixed;top:3.5rem;right:0;bottom:0;left:0;overflow-x:hidden;overflow-y:auto;width:100%;-webkit-overflow-scrolling:touch}
+
+.deviceManage ul{width:100%}
+.deviceManage h3.title{margin-top:.4rem;font-size:.38rem;line-height:.6rem}
+
+.deviceManage ul li{margin:.35rem 0 0 0;width:33.33%}
+.deviceManage ul li img{width:1.2rem;height:1.2rem}
+.deviceManage ul li p{width:1.2rem;text-align:center;font-size:.28rem;line-height:.9rem}
+.deviceManage ul li a{width:1.2rem}
+.deviceManage ul li a.align0{float:left;margin-left:.1rem}
+.deviceManage ul li a.align1{margin-left:.55rem}
+.deviceManage ul li a.align2{float:right;margin-right:.1rem}

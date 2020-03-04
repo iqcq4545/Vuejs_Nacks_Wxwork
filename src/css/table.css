@@ -1,0 +1,12 @@
+.Table{overflow-x:hidden;overflow-y:scroll;width:7.5rem;height:100%;background:#f4f5f5;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.Table .Top{height:.7rem}
+.Table .submit{position:fixed;margin-top:.15rem;width:7.5rem;font-size:.28rem;line-height:.9rem}
+.Table::-webkit-scrollbar{display:none}
+
+.tbody{margin:1.1rem .3rem 1.05rem .3rem}
+.tbody dl{margin-top:.25rem;width:6.3rem;padding:.3rem;border-radius:.1rem}
+.tbody dl dt{font-size:.28rem;width:100%;line-height:.3rem;border-bottom:1px #f6f7f8 solid;padding-bottom:.2rem;margin-bottom:.05rem;font-weight:700}
+.tbody dl dd{font-size:.26rem;width:100%;line-height:.3rem;padding-top:.2rem;color:#333}
+.tbody dl b{width:1.5rem;font-weight:400;color:#9ca0b8}
+.tbody dl p{font-size:.26rem;line-height:.3rem;width:4.8rem;float:right}
+.tbody dl.on{box-shadow:0 0 0 1px #0072ac}
