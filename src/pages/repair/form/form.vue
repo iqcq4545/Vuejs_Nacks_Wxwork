@@ -85,7 +85,7 @@
           Style: undefined
         },
         content: undefined,
-        TableOption: { isShow: false, data: undefined, field: undefined, selected: undefined, single: true, placeholder: "请输入设备名称" },
+        TableOption: { isShow: false, data: undefined, field: undefined, selected: undefined, single: true, placeholder: "请输入设备名称/编码" },
         pageOption: { index: 1, size: 10, max: 2, keyword: "" },
       }
     },
@@ -142,6 +142,7 @@
             this.TableOption.field = {
               dt: { name: "设备名称", value: "Name", class: "input" },
               dd: [
+                { name: "设备编码", value: "AssetSN", class: "input" },
                 { name: "设备型号", value: "Style", class: "input" },
                 { name: "设备编号", value: "SN", class: "input" }]
             };

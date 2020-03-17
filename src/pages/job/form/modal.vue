@@ -34,7 +34,7 @@
               <tr>
                 <td>结果</td>
                 <td>
-                  <label v-for="(res,j) in ['已点检','未点检']" class="radio" :class="item.CheckResult.Result===~j+2&&'on'">
+                  <label v-for="(res,j) in ['正常','异常']" class="radio" :class="item.CheckResult.Result===~j+2&&'on'">
                     <input type="radio" :name="'result'+i" :value="~j+2" v-model="item.CheckResult.Result">{{res}}
                   </label>
                 </td>
@@ -118,6 +118,6 @@
   }
 
   .radio input {
-    margin: 0 .05rem 0 0;
+    margin: -.06rem .06rem 0 0;
   }
 </style>

@@ -52,6 +52,6 @@ export function request({ url, data = {}, headers = {}, method = "GET" }) {
     if (localStorage.getItem("logout") === "true") {
       return false;
     }
-    alert("服务器开小差了，请稍后再试。");
+    // alert("服务器开小差了，请稍后再试。");
   });
 }

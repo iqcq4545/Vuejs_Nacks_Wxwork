@@ -247,7 +247,7 @@
       },
 
       imgHost(str) {
-        this.ItemOption.data.Content = str.replace(/(src=")/g, "$1" + location.protocol + "\/\/" + location.hostname);
+        this.ItemOption.data.Content = str.replace(/(src=")/g, "$1" + /*location.protocol + "\/\/" + location.hostname*/"http://device.nacks.com:9002");
       },
 
       detailInit() {

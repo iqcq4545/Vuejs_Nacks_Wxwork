@@ -7,15 +7,15 @@
           <p>{{statis.device}}</p>
         </div>
         <ul class="deviceState">
-          <li>
+          <li @click="link(statis.dispatch,'dispatch')">
             <h3 class="fn">我的派单</h3>
             <p>{{statis.dispatch}}</p>
           </li>
-          <li>
+          <li @click="link(statis.job,'job')">
             <h3 class="fn">我的工单</h3>
             <p>{{statis.job}}</p>
           </li>
-          <li>
+          <li @click="link(statis.task,'task')">
             <h3 class="fn">今日任务</h3>
             <p>{{statis.task}}</p>
           </li>
@@ -73,7 +73,7 @@
 
       if (location.hostname.replace(/\./g, "") > 0) {
         that.dev = true;
-        document.cookie = "ZT_DevicePlatForm_UserId=banzuzhang";
+        document.cookie = "ZT_DevicePlatForm_UserId=weixiu";
       }
     },
     methods: {
@@ -90,11 +90,31 @@
           this.statis.task = res.data.todayWorkJobCount;
         });
       },
+      link(num, str) {
+        var url;
+        if (num) {
+          switch (str) {
+            case ("dispatch"): {
+              url = "dispatch/list.html";
+              break;
+            }
+            case ("job"): {
+              url = "job/list.html";
+              break;
+            }
+            case ("task"): {
+              url = "tools/calendar.html";
+              break;
+            }
+          }
+          location.assign(url);
+        }
+      },
+
       /* DEV */
       filter(url) {
         return url.substr(url.indexOf("/web") + 4);
-      },
-
+      }
     }
   }
 </script>

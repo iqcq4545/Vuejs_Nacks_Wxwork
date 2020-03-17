@@ -75,6 +75,19 @@ class REQ_JOB {
     });
   }
 
+
+  getTeamList(data = {}) {
+    return request({
+      url: `/workOrder/workOrderInfo/getWorkOrderListInRepairGroup`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'GET',
+    });
+  }
+
   getCancel(data = {}) {
     return request({
       url: `/repairInfo/cancelRepairInfo`,

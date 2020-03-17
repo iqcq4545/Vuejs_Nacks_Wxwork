@@ -1,21 +1,19 @@
 <template>
-  <div class="full">
-    <div class="Table" id="Table">
-      <div class="Top bgw">
-        <Search :SearchOption="SearchOption" @SearchTop="search"></Search>
-      </div>
-      <div v-if="TableOption.data.length>0" class="container tbody">
-        <dl v-for="(item,i) in TableOption.data" :key="i" class="bgw" :class="item.on||''" @click="select(i)">
-          <dt>{{item[TableOption.field.dt.value]}}</dt>
-          <dd v-for="(field,j) in TableOption.field.dd" :key="j"><b>{{field.name}}</b>
-            <p>{{item[field.value]||"--"}}</p>
-          </dd>
-        </dl>
-      </div>
-
-      <a v-if="selected.length===0" class="submit btn" @click="close()">关 闭</a>
-      <a v-if="selected.length>0" class="submit btn" @click="ok()">确 认</a>
+  <div class="Table full" id="Table">
+    <div class="Top bgw">
+      <Search :SearchOption="SearchOption" @SearchTop="search"></Search>
     </div>
+    <div v-if="TableOption.data.length>0" class="container tbody">
+      <dl v-for="(item,i) in TableOption.data" :key="i" class="bgw" :class="item.on||''" @click="select(i)">
+        <dt>{{item[TableOption.field.dt.value]}}</dt>
+        <dd v-for="(field,j) in TableOption.field.dd" :key="j"><b>{{field.name}}</b>
+          <p>{{item[field.value]||"--"}}</p>
+        </dd>
+      </dl>
+    </div>
+
+    <a v-if="selected.length===0" class="submit btn" @click="close()">关 闭</a>
+    <a v-if="selected.length>0" class="submit btn" @click="ok()">确 认</a>
   </div>
 </template>
 
