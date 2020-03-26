@@ -43,7 +43,8 @@
           </table>
         </div>
         <div class="foot bgw">
-          <p></p><a @click="checkSubmit()" class="submit fr">提交</a>
+          <a @click="checkSubmit()" class="btnsm submit fr">提交</a>
+          <a @click="close()" class="btnsm fr">关闭</a>
         </div>
       </div>
     </transition>
@@ -110,7 +111,7 @@
 
   .radio {
     margin: 0 .30rem 0 0;
-    color:#bbb;
+    color: #bbb;
   }
 
   .radio.on {

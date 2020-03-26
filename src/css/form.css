@@ -5,7 +5,9 @@
 .form .row .rtl{direction:rtl}
 .form .row .withIcon{padding-right:.62rem;width:4rem}
 .form .row .textarea{margin:.25rem .3rem 0 .3rem;width:6.3rem;font-size:.28rem;line-height:.32rem;resize:none}
+.form .row .multiple{position:absolute;top:.2rem;right:0;opacity:0}
 .form .row .icon{position:absolute;top:.27rem;right:.3rem;z-index:1;float:right;width:.28rem;height:.28rem;object-fit:contain;-o-object-fit:contain}
+
 .form .row .ul{margin:0 .3rem;width:6.3rem}
 .form .row .ul li{padding:.25rem 0;width:100%}
 .form .row .ul li p{width:4.5rem;font-size:.26rem;line-height:.3rem}
@@ -19,6 +21,7 @@
 .form label.title{margin:.3rem 0 .05rem 0;width:100%;text-indent:.05rem;font-weight:700;font-size:.3rem;line-height:.5rem}
 
 .form select{width:6.3rem}
+.form select option{text-align:center}
 .form input,select,textarea{position:relative;background:0 0}
 .form .submit{position:fixed;margin:.3rem;width:6.9rem;border-radius:.45rem;font-size:.32rem;line-height:.9rem}
 
@@ -32,7 +35,7 @@
 .form1 .wrap .row .table:active{opacity:.75}
 .form1 .wrap .row .table .more{color:#0072ac}
 
-.form .tab{display:flex;width:100%;border-bottom-right-radius:.1rem;border-bottom-left-radius:.1rem;background:#fff;line-height:.5rem;justify-content:center}
+.form .tab{display:flex;width:100%;border-bottom-right-radius:.1rem;border-bottom-left-radius:.1rem;background:#fff;line-height:.5rem;justify-content:center;position:fixed;top: 0;left: 0;z-index: 2;}
 
 .form .tab ul li{display:flex;margin:0 .5rem;padding:.25rem 0;border-bottom:.05rem solid #fff;font-size:.28rem;line-height:.28rem}
 .form .tab ul li.on{color:#3f51b5;border-bottom-color:#3f51b5}

@@ -4,7 +4,8 @@
       <Search :SearchOption="SearchOption" @SearchTop="search"></Search>
     </div>
     <div v-if="TableOption.data.length>0" class="container tbody">
-      <dl v-for="(item,i) in TableOption.data" :key="i" class="bgw" :class="item.on||''" @click="select(i)">
+      <dl v-for="(item,i) in TableOption.data" :key="i" class="bgw" :class="(item.on||'')+' '+(item.disable||'')"
+        @click="select(i)">
         <dt>{{item[TableOption.field.dt.value]}}</dt>
         <dd v-for="(field,j) in TableOption.field.dd" :key="j"><b>{{field.name}}</b>
           <p>{{item[field.value]||"--"}}</p>
@@ -48,8 +49,8 @@
 
     },
     mounted() {
-      document.body.style.overflow = "hidden";
       var that = this;
+      document.body.style.overflow = "hidden";
       document.getElementById("Table").addEventListener("scroll", function (e) {
         if ((e.target.scrollTop + e.target.clientHeight) > (e.target.scrollHeight - 1)) {
           that.search(1);
@@ -60,7 +61,6 @@
     methods: {
       close() {
         this.TableOption.isShow = false;
-        document.body.style.overflow = "";
       },
 
       ok() {
@@ -76,6 +76,9 @@
 
       select(i) {
         var item = this.TableOption.data[i];
+        if (item.disable) {
+          return false;
+        }
         if (this.TableOption.single) {
           this.selected = [];
           if (this.last !== undefined) {

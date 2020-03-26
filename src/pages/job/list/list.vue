@@ -51,8 +51,10 @@
         </div>
       </div>
     </div>
-    <Detail v-if="DetailOption.isShow" :DetailOption="DetailOption" @showPopup="showPopup"></Detail>
-    <Popup v-if="PopupOption.isShow" :PopupOption="PopupOption"></Popup>
+    <Detail v-if="DetailOption.isShow" :DetailOption="DetailOption" @showImgzoom="showImgzoom" @showPopup="showPopup"
+      @setScroll="setScroll"></Detail>
+    <Imgzoom v-if="ImgzoomOption.isShow" :ImgzoomOption="ImgzoomOption"></Imgzoom>
+    <Popup v-if="PopupOption.isShow" :PopupOption="PopupOption" @setScroll="setScroll"></Popup>
     <Sider v-if="SiderOption.isShow" :SiderOption="SiderOption" @ok="SiderOk()"></Sider>
 
   </div>
@@ -62,8 +64,9 @@
 <script>
   import Search from "@/components/Search";
   import Detail from "@/components/Detail";
-  import Popup from "@/components/Popup";
+  import Imgzoom from "@/components/Imgzoom";
 
+  import Popup from "@/components/Popup";
   import Sider from "@/components/Sider";
 
   import { cookiesValue } from "../../../utils/cookies";
@@ -99,7 +102,13 @@
             data: undefined,
             field: undefined
           },
-          value: undefined
+          value: undefined,
+          slide: []
+        },
+        ImgzoomOption: {
+          isShow: false,
+          images: [],
+          index: 0
         },
         PopupOption: {
           isShow: false,
@@ -118,6 +127,7 @@
     components: {
       Search: Search,
       Detail: Detail,
+      Imgzoom: Imgzoom,
       Popup: Popup,
       Sider: Sider
     },
@@ -273,6 +283,8 @@
 
       //维修工单
       itemRepair(i) {
+        this.detailInit();
+
         this.$ReqRepair.getRepairInfo({ sn: this.itemList[i].BusinessSN }).then((res) => {
           var data = this.itemList[i];
           data.repairInfo = res.data.repairInfo;
@@ -299,7 +311,7 @@
           this.$ReqRepair.sparePartList({ workOrderSN: this.itemList[i].SN }).then((res) => {
             var table = [],
               value = "",
-              list = res.data.list;
+              list = res.data.list || [];
             for (var i = 0; i < list.length; i++) {
               var tbody = {
                 th: list[i].Name,
@@ -323,14 +335,12 @@
           this.$ReqRepair.getRepairIssue({ repairSN: this.itemList[i].BusinessSN }).then((res) => {
             var table = [],
               value = "",
-              list = res.data.list;
+              list = res.data.list || [];
             for (var i = 0; i < list.length; i++) {
               var tbody = {
                 th: list[i].Question,
-                td: [
-                  { name: "处理情况", value: list[i].DoCase },
-                ]
-              }
+                td: [{ name: "处理情况", value: list[i].DoCase }]
+              };
               table.push(tbody);
               value += list[i].Question + (i < list.length - 1 ? ", " : "");
             }
@@ -343,6 +353,9 @@
             this.Toast({}, 0);
           });
 
+          this.$ReqRepair.getRepairImg({ sn: this.itemList[i].BusinessSN }).then((res) => {
+            this.DetailOption.slide = res.data.list;
+          });
         });
       },
 
@@ -353,26 +366,30 @@
         var data = this.itemList[i],
           th = "Name";
 
-        this.DetailOption.field = [[{ name: "工单类型", value: data.WorkOrderType.Name, class: "input" },
-        { name: "紧急程度", value: data.Level.Name, class: "input" },
-        { name: "状态", value: data.Status.Name, class: "input" }]];
+        this.DetailOption.field = [[
+          { name: "工单类型", value: data.WorkOrderType.Name, class: "input" },
+          { name: "紧急程度", value: data.Level.Name, class: "input" },
+          { name: "状态", value: data.Status.Name, class: "input" }]];
 
         this.DetailOption.table.field = [];
 
         this.$ReqCheck.getCheckInfo({ sn: this.itemList[i].BusinessSN }).then((res) => {
-          var check = res.data.checkTask,
-            length = {
-              spare: check.CheckSpareDeviceList && check.CheckSpareDeviceList.length,
-              issue: check.CheckQuestionList && check.CheckQuestionList.length
-            },
+          var check = res.data.checkTask;
+
+          if (!check) {
+            this.Toast({ text: "没有" + data.WorkOrderType.Name.substr(0, 2) + "任务" }, 2000);
+            return false;
+          }
+
+          var length = { spare: (check.CheckSpareDeviceList || []).length, issue: (check.CheckQuestionList || []).length },
             table = { spare: [], issue: [] },
             value = { spare: "", issue: "" };
-          var checkList = res.data.checkTask.CheckDeviceList;
+          var checkList = res.data.checkTask.CheckDeviceList || [];
 
           for (var j = 0; j < checkList.length; j++) {
             let table = [],
               value = "",
-              checkItem = checkList[j].CheckItemList;
+              checkItem = checkList[j].CheckItemList || [];
             for (var k = 0; k < checkItem.length; k++) {
               var tbody = {
                 th: checkItem[k].Name,
@@ -419,7 +436,6 @@
           this.DetailOption.field.push([{ name: "问题事项", data: table.issue, value: value.issue, class: "table" }])
 
           this.DetailOption.title = data.Title;
-          data.checkList = check.CheckDeviceList;
 
           this.DetailOption.value = "string";
           this.DetailOption.isShow = true;
@@ -437,13 +453,14 @@
         this.DetailOption.field = [];
 
         this.$ReqMaintain.getMaintainInfo({ sn: this.itemList[i].BusinessSN }).then((res) => {
-          var maintain = res.data.maintainTask,
-            length = {
-              device: maintain.MaintainDeviceList && maintain.MaintainDeviceList.length,
-              spare: maintain.MaintainSpareDeviceList && maintain.MaintainSpareDeviceList.length,
-              cost: maintain.MaintainCostList && maintain.MaintainCostList.length,
-              issue: maintain.MaintainQuestionList && maintain.MaintainQuestionList.length
-            },
+          var maintain = res.data.maintainTask;
+
+          if (!maintain) {
+            this.Toast({ text: "没有" + data.WorkOrderType.Name.substr(0, 2) + "任务" }, 2000);
+            return false;
+          }
+
+          var length = { device: (maintain.MaintainDeviceList || []).length, spare: (maintain.MaintainSpareDeviceList || []).length, cost: (maintain.MaintainCostList || []).length, issue: (maintain.MaintainQuestionList || []).length },
             table = { device: [], spare: [], cost: [], issue: [] },
             value = { device: "", spare: "", cost: "", issue: "" };
           for (var i = 0; i < length.device; i++) {
@@ -514,11 +531,17 @@
         });
       },
 
+      showImgzoom(option) {
+        console.log("fssdfssdf", option)
+        this.ImgzoomOption.images = this.DetailOption.slide;
+        this.ImgzoomOption.index = option.index;
+        this.ImgzoomOption.isShow = true;
+      },
+
       showPopup(data) {
         this.PopupOption.table = data;
         this.PopupOption.isShow = true;
       },
-
 
       showProcess(i) {
         this.detailInit();
@@ -559,8 +582,16 @@
         this.DetailOption.data = undefined;
         this.DetailOption.field = [];
         this.DetailOption.value = undefined;
+
+        this.DetailOption.slide = [];
       },
 
+      setScroll() {
+        if (!this.DetailOption.isShow && !this.PopupOption.isShow) {
+          document.body.removeAttribute("overflow");
+          document.body.style.overflow = "";
+        }
+      }
     },
   }
 </script>

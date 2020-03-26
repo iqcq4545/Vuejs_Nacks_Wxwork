@@ -36,9 +36,19 @@ class REQ_TOOLS {
       },
       method: 'GET',
     });
-
   }
 
+  uploadFile(data = {}) {
+    return request({
+      url: `/common/file/uploadFile`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'POST',
+    });
+  }
 
 }
 

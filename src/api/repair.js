@@ -111,6 +111,18 @@ class REQ_REPAIR {
     });
   }
 
+  getRepairImg(data = {}){
+    return request({
+      url: `/repairInfo/getPhotoList`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'GET',
+    });
+  }
+
   getRepairIssue(data={}){
     return request({
       url: `/repair/repairInfo/getRepairQuestionList`,

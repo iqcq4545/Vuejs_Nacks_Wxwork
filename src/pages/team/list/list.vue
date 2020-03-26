@@ -51,8 +51,10 @@
         </div>
       </div>
     </div>
-    <Detail v-if="DetailOption.isShow" :DetailOption="DetailOption" @showPopup="showPopup"></Detail>
-    <Popup v-if="PopupOption.isShow" :PopupOption="PopupOption"></Popup>
+
+    <Detail v-if="DetailOption.isShow" :DetailOption="DetailOption" @showPopup="showPopup" @setScroll="setScroll">
+    </Detail>
+    <Popup v-if="PopupOption.isShow" :PopupOption="PopupOption" @setScroll="setScroll"></Popup>
     <Sider v-if="SiderOption.isShow" :SiderOption="SiderOption" @ok="SiderOk()"></Sider>
 
   </div>
@@ -99,7 +101,9 @@
             data: undefined,
             field: undefined
           },
-          value: undefined
+          value: undefined,
+
+          slide: []
         },
         PopupOption: {
           isShow: false,
@@ -343,6 +347,9 @@
             this.Toast({}, 0);
           });
 
+          this.$ReqRepair.getRepairImg({ sn: this.itemList[i].BusinessSN }).then((res) => {
+            this.DetailOption.slide = res.data.list;
+          });
         });
       },
 
@@ -419,7 +426,6 @@
           this.DetailOption.field.push([{ name: "问题事项", data: table.issue, value: value.issue, class: "table" }])
 
           this.DetailOption.title = data.Title;
-          data.checkList = check.CheckDeviceList;
 
           this.DetailOption.value = "string";
           this.DetailOption.isShow = true;
@@ -519,7 +525,6 @@
         this.PopupOption.isShow = true;
       },
 
-
       showProcess(i) {
         this.detailInit();
         var data = this.itemList[i];
@@ -559,8 +564,16 @@
         this.DetailOption.data = undefined;
         this.DetailOption.field = [];
         this.DetailOption.value = undefined;
+
+        this.DetailOption.slide = [];
       },
 
+      setScroll() {
+        if (!this.DetailOption.isShow && !this.PopupOption.isShow) {
+          document.body.removeAttribute("overflow");
+          document.body.style.overflow = "";
+        }
+      }
     },
   }
 </script>

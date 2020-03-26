@@ -10,3 +10,6 @@
 .tbody dl b{width:1.5rem;font-weight:400;color:#9ca0b8}
 .tbody dl p{font-size:.26rem;line-height:.3rem;width:4.8rem;float:right}
 .tbody dl.on{box-shadow:0 0 0 1px #0072ac}
+
+.tbody dl.disable dd,.tbody dl.disable dt{color:#ccc}
+.tbody dl.disable b{color:#ddd}

@@ -2,6 +2,7 @@ import 'babel-polyfill';
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';
+import VueTouch from 'vue-touch'
 import config from '@/common/config';
 import routes from '@/router/router';
 //import store from '@/store';
@@ -10,6 +11,7 @@ import App from './App.vue';
 Vue.config.productionTip = false;
 
 Vue.use(VueRouter);
+Vue.use(VueTouch, {name: 'v-touch'})
 
 import { ReqLogin } from '../api/login';
 import { ReqIndex } from '../api/index';

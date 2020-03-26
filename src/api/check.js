@@ -3,6 +3,31 @@ import { request } from '../utils/http.js';
 class REQ_CHECK {
   constructor() {
   }
+
+  submit(data = {}) {
+    return request({
+      url: `/checkTask/addCheckTaskByRepairer`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'POST',
+    });
+  }
+
+  submitMultiple(data = {}) {
+    return request({
+      url: `/checkTask/addCheckTask`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'POST',
+    });
+  }
+
   getCheckInfo(data = {}) {
     return request({
       url: `/check/checkTask/getCheckTask`,
@@ -18,6 +43,18 @@ class REQ_CHECK {
   getCheckerList(data = {}) {
     return request({
       url: `/workOrder/workOrderInfo/getCheckerList`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'POST',
+    });
+  }
+
+  getDeviceList(data = {}) {
+    return request({
+      url: `/check/checkTask/getCheckDeviceList`,
       data: data,
       params: data,
       headers: {

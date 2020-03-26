@@ -23,7 +23,31 @@ class REQ_DEVICE {
       headers: {
         "Content-Type": "application/json;charset=UTF-8"
       },
-      method: 'POST',
+      method: 'GET',
+    });
+  }
+
+  getTeamId(data = {}) {
+    return request({
+      url: `/common/repairGroup/getRepairGroup`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'GET',
+    });
+  }
+
+  getCheckerList(data = {}) {
+    return request({
+      url: `/workOrder/workOrderInfo/getCheckerList`,
+      data: data,
+      params: data,
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      method: 'GET',
     });
   }
 
@@ -35,19 +59,7 @@ class REQ_DEVICE {
       headers: {
         "Content-Type": "application/json;charset=UTF-8"
       },
-      method: 'POST',
-    });
-  }
-
-  submit(data = {}) {
-    return request({
-      url: `/repairInfo/addRepairInfo`,
-      data: data,
-      params: data,
-      headers: {
-        "Content-Type": "application/json;charset=UTF-8"
-      },
-      method: 'POST',
+      method: 'GET',
     });
   }
 
@@ -71,7 +83,7 @@ class REQ_DEVICE {
       headers: {
         "Content-Type": "application/json;charset=UTF-8"
       },
-      method: 'POST',
+      method: 'GET',
     });
   }
 
@@ -83,10 +95,9 @@ class REQ_DEVICE {
       headers: {
         "Content-Type": "application/json;charset=UTF-8"
       },
-      method: 'POST',
+      method: 'GET',
     });
   }
-
 
   getCancel(data = {}) {
     return request({

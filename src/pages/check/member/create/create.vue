@@ -10,6 +10,12 @@
       </div>
       <form id="form">
         <div class="wrap">
+
+          <!-- <div class="row bgw">
+            <label>任务名称</label>
+            <input type="text" name="name" class="input withIcon" v-model="title" placeholder="请输入任务名称">
+          </div> -->
+
           <div v-if="type===1" class="row bgw">
             <label>设备名称</label>
             <p class="input withIcon" :class="!device.Name?'PH':''" @click="deviceList()">{{device.Name||"请选择"}}</p>
@@ -32,39 +38,36 @@
             <p class="input withIcon" :class="!device.Style?'PH':''">{{device.Style||"--"}}</p>
           </div>
 
-          <div class="row bgw">
+          <div class="row bgw" @click="openDate('beginDate')">
+            <label>开始日期</label>
+            <p class="input withIcon">{{beginDate}}</p>
+            <img class="icon" src="@/images/repair_btn_more.png" />
+          </div>
+
+          <div class="row bgw" @click="openDate('endDate')">
+            <label>结束日期</label>
+            <p class="input withIcon">{{endDate}}</p>
+            <img class="icon" src="@/images/repair_btn_more.png" />
+          </div>
+
+          <!-- <div class="row bgw">
             <label>紧急程度</label>
             <select class="input rtl withIcon" name="levelId">
               <option v-for="(item,i) in urgency" :value="item.Id">{{item.Name}}</option>
             </select>
             <img class="icon" src="@/images/repair_btn_more.png" />
-          </div>
+          </div> -->
 
           <div class="row bgw">
-            <label>图片上传</label>
-            <p v-if="uploadRate[1]" class="uploadRate">
-              {{(uploadRate[1]-uploadRate[0]?"上传中":"上传完成")+(" "+uploadRate[0]+"/"+uploadRate[1])}}</p>
-            <div class="inner">
-              <div class="imageBox" :class="i%3===2&&'mr0'" v-if="previewImg.length>0" v-for="(item,i) in previewImg">
-                <img class="image" :src="item"></img>
-                <img class="rmImage" src="@/images/btn_choose_error.png" @click="rmImage(i)"></img>
-              </div>
-              <div class="imageBox mr0">
-                <input class="inputImg" id="inputImg" type="file" multiple="multiple" accept="image/*"
-                  @change="chooseImg($event)" />
-                <p class="plus">＋</p>
-                <p class="desc">拍照/相册</p>
-              </div>
-            </div>
+            <label>备注</label>
+            <textarea class="textarea" name="remark" rows="4" v-model="content" placeholder="请输入备注"></textarea>
           </div>
 
-          <div class="row bgw">
-            <label>故障描述</label>
-            <textarea class="textarea" name="faultDesc" rows="4" v-model="content" placeholder="请输入故障描述"></textarea>
-          </div>
           <input type="hidden" name="deviceSN" v-model="device.SN" />
-          <input type="hidden" name="createrId" v-model="createrId" />
-          <input type="hidden" name="picList" v-model="JSON.stringify(imgList)" />
+          <input type="hidden" name="userId" v-model="createrId" />
+          <input type="hidden" name="beginDate" v-model="beginDate" />
+          <input type="hidden" name="endDate" v-model="endDate" />
+
         </div>
         <!-- <a class="submit btn" @click="back()">返 回</a> -->
         <a class="submit btn" @click="check()">提 交</a>
@@ -72,6 +75,19 @@
       </form>
     </div>
     <Table v-if="TableOption.isShow" :TableOption="TableOption" @TableSearch="deviceList" @ok="tableok"></Table>
+
+    <div class="mask full" v-if="DatepickOption.mask" @click="closeDate()">
+      <transition name="fade">
+        <div class="Datepick" v-if="DatepickOption.isShow" @click.stop>
+          <Calendar ref="Calendar" :markDate="DatepickOption.rest" :markDateMore="DatepickOption.arr"
+            @isToday="clickToday" @choseDay="clickDay" @changeMonth="clickMonth"></Calendar>
+          <div class="btnGroup">
+            <a style="color:#0072ac" @click="clickToday()">今天</a>
+            <a @click="closeDate()">确认</a>
+          </div>
+        </div>
+      </transition>
+    </div>
 
   </div>
 
@@ -87,9 +103,10 @@
     rmFromArray,
     compareArray,
   } from '../utils/util';*/
+  import Calendar from "@/components/Calendar";
 
   import md5 from 'js-md5';
-  import { cookiesValue } from '../../../utils/cookies';
+  import { cookiesValue } from '../../../../utils/cookies';
   import Table from '@/components/Table';
 
   export default {
@@ -100,21 +117,30 @@
         type: 0,
         urgency: [],
         createrId: undefined,
+        DatepickOption: {
+          mask: false,
+          isShow: false,
+          key: undefined,
+          rest: [],
+          arr: [],
+        },
+        teamId: undefined,
         device: {
           Name: undefined,
           AssetSN: undefined,
           Style: undefined
         },
+        beginDate: undefined,
+        endDate: undefined,
+        title: undefined,
         content: undefined,
-        lrzResult: undefined,
-        previewImg: [],
-        imgList: [],
-        uploadRate: [0, 0],
+
         TableOption: { isShow: false, data: undefined, field: undefined, selected: undefined, single: true, placeholder: "请输入设备名称/编码" },
         pageOption: { index: 1, size: 10, max: 2, keyword: "" },
       }
     },
     components: {
+      Calendar: Calendar,
       Table: Table,
     },
     created() {
@@ -130,12 +156,49 @@
     },
     mounted() {
       this.createrId = cookiesValue("ZT_DevicePlatForm_UserId");
+
+      this.getTeamId();
+
       this.wxjssdkInit();
       this.getUrgency();
+
+      this.beginDate = this.endDate = this.format();
     },
     methods: {
+      format(date = undefined) {
+        date = date ? new Date(date) : new Date();
+        return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+      },
+
+      clickToday(data) {
+        this[this.DatepickOption.key] = this.format();
+        this.closeDate();
+      },
+      clickDay(data) {
+        this[this.DatepickOption.key] = data;
+      },
+      clickMonth(data) {
+        console.log("clickDay")
+      },
+
+      openDate(key) {
+        this.DatepickOption.key = key;
+        this.DatepickOption.mask = true;
+        this.$nextTick(() => {
+          this.DatepickOption.isShow = true;
+        });
+      },
+
+      closeDate() {
+        var that = this;
+        that.DatepickOption.isShow = false;
+        setTimeout(() => {
+          that.DatepickOption.mask = false;
+        }, 250);
+      },
+
       wxjssdkInit() {
-        this.$ReqRepair.signature({ type: 1 }).then((res) => {
+        this.$ReqRepair.signature({ type: 3 }).then((res) => {
           this.$wx.config({
             // debug: true,
             appId: this.APPID,
@@ -144,6 +207,19 @@
             signature: res.data.sign,
             jsApiList: ["scanQRCode"]
           });
+        });
+      },
+
+      getUrgency() {
+        this.$ReqRepair.getUrgency({ status: 1 }).then((res) => {
+          this.urgency = res.data.list;
+          this.$forceUpdate();
+        });
+      },
+
+      getTeamId() {
+        this.$ReqDevice.getTeamId({ userId: this.createrId }).then((res) => {
+          this.teamId = res.data.repairGroup.Id;
         });
       },
 
@@ -160,9 +236,13 @@
           return false;
         }
         this.Toast({ text: "正在加载", icon: "loading" }, 20000);
-        this.$ReqRepair.deviceList({ pageIndex: this.pageOption.index, pageSize: this.pageOption.size, name: opt.keyword }).then((res) => {
-          if (res.data.list.length > 0) {
-            Array.prototype.push.apply(this.TableOption.data, res.data.list);
+        this.$ReqCheck.getDeviceList({ pageIndex: this.pageOption.index, pageSize: this.pageOption.size, repairGroupId: this.teamId, name: opt.keyword }).then((res) => {
+          var list = res.data.list;
+          for (var i = 0; i < list.length; i++) {
+            list[i].disable = (!list[i].CheckStandard ? "disable" : "");
+          }
+          if (list.length > 0) {
+            Array.prototype.push.apply(this.TableOption.data, list);
             this.pageOption.max = res.data.recordCount / this.pageOption.size;
             this.TableOption.field = {
               dt: { name: "设备名称", value: "Name", class: "input" },
@@ -174,7 +254,7 @@
             this.$set(this.TableOption.data, 0, this.TableOption.data[0]);
           }
           if (!this.TableOption.isShow) {
-            this.TableOption.isShow = true
+            this.TableOption.isShow = true;
           }
           this.Toast({}, 0);
         });
@@ -206,48 +286,10 @@
         this.type = code;
       },
 
-      getUrgency() {
-        this.$ReqRepair.getUrgency({ status: 1 }).then((res) => {
-          this.urgency = res.data.list;
-          this.$forceUpdate();
-        });
-      },
-
       getDevice(sn) {
         this.$ReqRepair.getDevice({ sn: sn }).then((res) => {
           this.device = res.data.device;
         });
-      },
-
-      chooseImg(e) {
-        var that = this,
-          files = e.target.files;
-        for (var i = 0; i < files.length; i++) {
-          that.$lrz(files[i]).then(function (result) {
-            that.$set(that.uploadRate, 1, that.uploadRate[1] + 1);
-            that.updateImg(result);
-          }).catch(error => {
-          }).always(() => { });
-        }
-        document.getElementById("inputImg").value = null;
-      },
-
-      updateImg(lrzResult) {
-        var that = this;
-        //that.Toast({ text: "正在上传图片", icon: "loading" }, 20000);
-        lrzResult.formData.append("pic", 0);
-        that.$ReqTools.uploadFile(lrzResult.formData).then(res => {
-          that.$set(that.uploadRate, 0, that.uploadRate[0] + 1);
-          that.previewImg.push(lrzResult.base64);
-          that.imgList.push({ fileName: res.data.fileName, maskName: res.data.maskName });
-        });
-      },
-
-      rmImage(i) {
-        this.uploadRate[0] -= 1;
-        this.uploadRate[1] -= 1;
-        this.imgList.splice(i, 1);
-        this.previewImg.splice(i, 1);
       },
 
       check() {
@@ -261,7 +303,7 @@
       submit() {
         this.Toast({ text: "正在提交", icon: "loading" }, 20000);
         var data = new FormData(document.getElementById("form"));
-        this.$ReqRepair.submit(data).then((res) => {
+        this.$ReqCheck.submit(data).then((res) => {
           if (res.data.result === "error") {
             this.Toast({ text: res.data.errorMsg });
             return false;
@@ -279,8 +321,32 @@
   }
 </script>
 
-<style src="../../../css/form.css"></style>
-<style scoped>
+<style src="../../../../css/form.css"></style>
+<style>
+  .Datepick {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    background: #fff;
+    min-height: 7.72rem;
+  }
+
+  .Datepick .btnGroup {
+    border-top: 1px #f6f7f8 solid;
+    width: 6.9rem;
+    margin: 0 .3rem;
+    position: absolute;
+    bottom: 0;
+  }
+
+  .Datepick .btnGroup a {
+    width: 50%;
+    float: left;
+    line-height: .8rem;
+    text-align: center;
+  }
+
   .form .tab {
     width: 7.5rem;
   }
@@ -363,5 +429,19 @@
   .desc {
     width: 100%;
     text-align: center
+  }
+
+  .fade-enter-active,
+  .fade-leave-active {
+    -webkit-transition: all .25s ease-out;
+    -moz-transition: all .25s ease-out;
+    -o-transition: all .25s ease-out;
+    transition: all .25s ease-out
+  }
+
+  .fade-enter,
+  .fade-leave-to {
+    /*opacity:0;*/
+    transform: translate(0, 100%);
   }
 </style>

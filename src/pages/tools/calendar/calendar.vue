@@ -208,7 +208,6 @@
 <style>
   .Calendar {
     background: #fff;
-
   }
 
   ul.dateItem .mark1 p {

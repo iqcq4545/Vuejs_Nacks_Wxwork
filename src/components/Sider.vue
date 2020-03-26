@@ -29,8 +29,8 @@
       }
     },
     mounted() {
-      document.body.style.overflow = "hidden";
       this.show = true;
+      document.body.style.overflow = "hidden";
     },
     computed: {
 
@@ -40,7 +40,6 @@
         var item = this.SiderOption.data[i].dd[j];
         this.SiderOption.selected[i].id = j;
         this.SiderOption.selected[i].uid = item.id;
-        console.log(this.SiderOption.selected)
       },
 
       close() {

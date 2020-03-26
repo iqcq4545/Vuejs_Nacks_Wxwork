@@ -45,7 +45,9 @@
         </div>
       </div>
     </div>
-    <Detail v-if="DetailOption.isShow" :DetailOption="DetailOption"></Detail>
+    <Detail v-if="DetailOption.isShow" :DetailOption="DetailOption" @showImgzoom="showImgzoom" @setScroll="setScroll">
+    </Detail>
+    <Imgzoom v-if="ImgzoomOption.isShow" :ImgzoomOption="ImgzoomOption"></Imgzoom>
   </div>
 
 </template>
@@ -53,6 +55,7 @@
 <script>
   import Search from '@/components/Search';
   import Detail from '@/components/Detail';
+  import Imgzoom from "@/components/Imgzoom";
 
   import { cookiesValue } from '../../../utils/cookies';
   import { sortObj } from '../../../utils/Array';
@@ -78,7 +81,13 @@
           desc: undefined,
           data: undefined,
           field: undefined,
-          value: undefined
+          value: undefined,
+          slide: []
+        },
+        ImgzoomOption: {
+          isShow: false,
+          images: [],
+          index: 0
         },
         pageOption: {
           index: 1,
@@ -90,7 +99,8 @@
     },
     components: {
       Search: Search,
-      Detail: Detail
+      Detail: Detail,
+      Imgzoom: Imgzoom
     },
 
     created() {
@@ -217,7 +227,18 @@
         this.DetailOption.image = data.Device.Pic || true;
         this.DetailOption.data = data;
         this.DetailOption.isShow = true;
+
+        this.$ReqRepair.getRepairImg({ sn: this.itemList[i].SN }).then((res) => {
+          this.DetailOption.slide = res.data.list;
+        });
+
         this.Toast({}, 0);
+      },
+
+      showImgzoom(option) {
+        this.ImgzoomOption.images = this.DetailOption.slide;
+        this.ImgzoomOption.index = option.index;
+        this.ImgzoomOption.isShow = true;
       },
 
       showProcess(i) {
@@ -254,7 +275,16 @@
         this.DetailOption.data = undefined;
         this.DetailOption.field = [];
         this.DetailOption.value = undefined;
+
+        this.DetailOption.slide = [];
       },
+
+      setScroll() {
+        if (!this.DetailOption.isShow) {
+          document.body.removeAttribute("overflow");
+          document.body.style.overflow = "";
+        }
+      }
     },
   }
 </script>

@@ -173,7 +173,7 @@
           //无法选中某天
           k.dayHide = t < this.agoDayHide || t > this.futureDayHide;
           if (k.isToday) {
-            this.$emit("isToday", nowTime);
+            //this.$emit("isToday", nowTime);
           }
           let flag = !k.dayHide && k.otherMonth === "nowMonth";
           if (chooseDay && chooseDay === nowTime && flag) {

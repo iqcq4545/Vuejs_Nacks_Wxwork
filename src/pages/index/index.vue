@@ -73,7 +73,7 @@
 
       if (location.hostname.replace(/\./g, "") > 0) {
         that.dev = true;
-        document.cookie = "ZT_DevicePlatForm_UserId=weixiu";
+        document.cookie = "ZT_DevicePlatForm_UserId=banzuzhang";
       }
     },
     methods: {

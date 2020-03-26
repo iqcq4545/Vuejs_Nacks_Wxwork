@@ -23,13 +23,9 @@
           </div>
 
           <div class="row bgw">
-            <label>设备编码</label>
-            <p class="input withIcon" :class="!device.AssetSN?'PH':''">{{device.AssetSN||"--"}}</p>
-          </div>
-
-          <div class="row bgw">
             <label>设备型号</label>
             <p class="input withIcon" :class="!device.Style?'PH':''">{{device.Style||"--"}}</p>
+            <!-- <img class="icon" src="@/images/space.png" @click="getDevice('')" /> -->
           </div>
 
           <div class="row bgw">
@@ -65,8 +61,9 @@
           <input type="hidden" name="deviceSN" v-model="device.SN" />
           <input type="hidden" name="createrId" v-model="createrId" />
           <input type="hidden" name="picList" v-model="JSON.stringify(imgList)" />
+          <!-- <a class="submit btn" @click="back()">返 回</a> -->
+
         </div>
-        <!-- <a class="submit btn" @click="back()">返 回</a> -->
         <a class="submit btn" @click="check()">提 交</a>
 
       </form>
@@ -102,7 +99,6 @@
         createrId: undefined,
         device: {
           Name: undefined,
-          AssetSN: undefined,
           Style: undefined
         },
         content: undefined,

@@ -24,7 +24,7 @@
           </table>
         </div>
         <div class="foot">
-          <p>( 两次输入的密码必须相同 )</p><a @click="checkSubmit()" class="submit fr"
+          <p>( 两次输入的密码必须相同 )</p><a @click="checkSubmit()" class="btnsm submit fr"
             :class="(!modalOption.data.password||!modalOption.data.password_)&&'disable'">提交</a>
         </div>
       </div>

@@ -1,26 +1,23 @@
 <template>
   <div class="page">
     <form v-if="repairInfo" id="form">
-
       <div class="info">
-
         <div class="row">
-          <label class="title">维修单号 : </label>
+          <label class="title">{{jobInfo.WorkOrderType.Name.substr(0,2)}}单号 : </label>
           <p class="text">{{jobInfo.SN}}</p>
           <input type="hidden" name="sn" v-model="jobInfo.SN" />
         </div>
 
         <div class="row">
-          <label class="title">工单类型 : </label>
+          <label class="title">工单类型 :</label>
           <p class="text">{{jobInfo.WorkOrderType.Name}}</p>
           <input type="hidden" name="workOrderTypeId" v-model="jobInfo.WorkOrderType.Id" />
         </div>
 
         <div v-if="jobInfo.WorkOrderType.Id===JobType.repair.Id" class="row">
-          <label class="title">设备名称 : </label>
+          <label class="title">设备名称 :</label>
           <p class="text">{{repairInfo.Device.Name}}</p>
         </div>
-
       </div>
 
       <div class="container form pb110">

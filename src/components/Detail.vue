@@ -1,22 +1,38 @@
 <template>
   <div class="Detail full">
     <div class="container" id="wrap">
+      <!-- 预览图片 -->
       <div v-if="DetailOption.image" class="previewImg">
         <img class="img" :src="DetailOption.image===true?noImg:DetailOption.image" />
         <img v-if="DetailOption.maskImg" class="maskImg" :src="DetailOption.maskImg" />
+        <!-- 上传图片 -->
         <div v-if="DetailOption.editable" class="camera">
           <input type="file" accept="image/*" @change="chooseImg($event)" />
           <img src="@/images/camera.png">
         </div>
       </div>
-
+      <!-- 滚动图片 -->
+      <div v-if="DetailOption.slide.length>0&&false" class="slide">
+        <v-touch v-on:swipeleft="slideLeft" v-on:swiperight="slideRight">
+          <ul class="slide-ul" :style="'width:'+7.5*DetailOption.slide.length+'rem;left:-'+7.5*slideIndex+'rem'">
+            <li class="slide-li" v-for="(item,i) in DetailOption.slide" :key="i"
+              :data-count="DetailOption.slide.length">
+              <img class="slide-img" :src="item.Url" alt="" :data-count="DetailOption.slide.length" />
+            </li>
+          </ul>
+        </v-touch>
+        <ul class="slide-pagination">
+          <li class="slide-circle" :class="i===slideIndex&&'on'" v-for="(item,i) in DetailOption.slide" :key="i">●</li>
+        </ul>
+      </div>
+      <!-- 标题和描述 -->
       <div class="form1 head">
         <div v-if="DetailOption.title" class="wrap">
           <p v-if="DetailOption.title" class="title">{{DetailOption.title}}</p>
           <p v-if="DetailOption.desc" class="desc">{{DetailOption.desc}}</p>
         </div>
       </div>
-
+      <!-- 详情内容 -->
       <div v-if="DetailOption.type==='form'" class="form1 body">
         <div v-for="(item,i) in DetailOption.field" :key="i" class="wrap">
           <div v-for="(itemI,j) in item" class="row bgw">
@@ -27,8 +43,21 @@
             </p>
           </div>
         </div>
+        <!-- 详情图片 -->
+        <div class="wrap" v-if="DetailOption.slide.length>0">
+          <div class="row bgw">
+            <label class="lab1">报修图片</label>
+            <div class="imgScroll">
+              <ul class="imgWrap" :style="'width:'+2*DetailOption.slide.length+'rem'">
+                <li v-for="(item,i) in DetailOption.slide">
+                  <img :src="item.Url" @click="imgzoom(i)">
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
-
+      <!-- 流程 -->
       <div v-if="DetailOption.type==='process'" class="process bgw">
         <ul v-for="(item,i) in DetailOption.field" :key="i">
           <li v-for="(itemI,j) in item">
@@ -56,16 +85,32 @@
       return {
         submitStyle: undefined,
         noImg: require('@/images/item_img.jpg'),
+        slideIndex: 0,
       }
     },
     mounted() {
       document.body.style.overflow = "hidden";
-      console.log(this.DetailOption)
+      document.body.setAttribute("overflow", "hidden");
     },
     computed: {
 
     },
     methods: {
+
+      slideLeft(e) {
+        if (parseInt(e.target.dataset.count) - 1 - this.slideIndex) {
+          this.slideIndex += 1;
+        }
+        else {
+          return false
+        }
+      },
+      slideRight(e) {
+        if (this.slideIndex > 0) {
+          this.slideIndex -= 1;
+        }
+      },
+
       itemValue(key) {
         return this.DetailOption.value === 'string' ? (key || "--") : (eval("this.DetailOption.data." + key) || "--");
       },
@@ -75,185 +120,50 @@
       chooseImg() {
         this.$emit("chooseImg", event);
       },
+      imgzoom(i) {
+        var option = { index: i };
+        this.$emit("showImgzoom", option);
+      },
       popup(data) {
-        if (data.length > 1) {
+        if (data.length > 0) {
           this.$emit("showPopup", data);
         }
       },
       close() {
         this.DetailOption.isShow = false;
-        document.body.style.overflow = "";
-      }
+        this.$emit("setScroll");
+      },
     },
   }
 </script>
 
 <style>
-  .Detail {
-    z-index: 10;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    background: #f4f5f5 !important;
-    -webkit-overflow-scrolling: touch;
+  .imgScroll {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: .3rem;
   }
 
-  .Detail .previewImg {
-    width: 7.5rem;
-    height: 4.2rem;
-    background: #000
+  .imgScroll ul {
+    float: left;
   }
 
-  .Detail .previewImg .img,
-  .Detail .previewImg .maskImg {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    width: 7.5rem;
-    height: 4.2rem;
-    background: #fff;
+  .imgScroll ul li {
+    margin: 0 .1rem 0 0;
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  .imgScroll ul li img {
     background: #000;
+    width: 100%;
+    height: 100%;
     -o-object-fit: contain;
-    object-fit: contain
-  }
-
-  .Detail .previewImg .img {
-    z-index: 1
-  }
-
-  .Detail .previewImg .maskImg {
-    z-index: 2
-  }
-
-  .Detail .previewImg .camera {
-    position: absolute;
-    top: .25rem;
-    right: .25rem;
-    z-index: 3;
+    object-fit: contain;
+    border-radius: .1rem;
     overflow: hidden;
-    padding: .1rem;
-    width: .4rem;
-    height: .4rem;
-    border-radius: .3rem;
-    background: rgb(255, 255, 255, .25)
-  }
-
-  .Detail .previewImg .camera img,
-  .Detail .previewImg .camera input {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0
-  }
-
-  .Detail .previewImg .camera img {
-    z-index: 1;
-    margin: auto;
-    width: .4rem
-  }
-
-  .Detail .previewImg .camera input {
-    z-index: 2;
-    width: .6rem;
-    height: .6rem;
-    opacity: 0
-  }
-
-  .Detail .submit {
-    position: fixed;
-    margin-top: .15rem;
-    width: 7.5rem;
-    font-size: .28rem;
-    line-height: .9rem
-  }
-
-  .Detail .container {
-    margin: 0;
-    width: 100%
-  }
-
-  .form1.body .wrap:last-child {
-    margin-bottom: 1.1rem
-  }
-
-  .form1 .icon {
-    position: absolute;
-    top: .03rem;
-    right: .05rem;
-    height: .24rem
-  }
-
-  .form1 .table {
-    padding-right: .55rem;
-    width: 4.5rem
-  }
-
-  .form1 .table span {
-    overflow: hidden;
-    width: 100%;
-    height: .3rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    line-height: .3rem
-  }
-
-  .title {
-    width: 100%;
-    font-weight: 700;
-    font-size: .3rem;
-    line-height: .35rem
-  }
-
-  .desc {
-    padding-top: .25rem;
-    width: 100%;
-    font-size: .25rem;
-    line-height: .3rem
-  }
-
-  .process {
-    width: 7.5rem;
-    padding: .3rem 0;
-    margin: 0 0 1.1rem 0;
-  }
-
-  .process .dot {
-    position: absolute;
-    width: .1rem;
-    height: .1rem;
-    background: #eee;
-    border-radius: 50%;
-    left: 2.5rem;
-    top: 50%;
-    margin: -.04rem;
-  }
-
-  .process p {
-    width: 100%;
-    line-height: .5rem;
-    font-size: .28rem;
-    color: #999;
-    white-space: nowrap;
-
-  }
-
-  .process .left {
-    padding: .3rem .4rem .3rem .3rem;
-    width: 1.8rem;
-  }
-
-  .process .right {
-    padding: .3rem .3rem .3rem .4rem;
-    border-left: 1px #eee solid;
-    width: 4.2rem;
-  }
-
-  .process ul li:first-child p {
-    color: #000
   }
 </style>
 
+<style src="../css/detail.css"></style>
 <style src="../css/form.css"></style>
