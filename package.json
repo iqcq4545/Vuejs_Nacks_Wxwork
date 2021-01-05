@@ -43,7 +43,7 @@
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "echarts": "^4.5.0",
     "js-md5": "^0.7.3",
     "lrz": "^4.9.40",
